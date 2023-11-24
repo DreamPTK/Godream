@@ -130,11 +130,11 @@ def xarray_ds(tiff_path, rice_model = None):
         # Read each band and create a DataArray for it
         for i in range(num_band):
             band_i = src.read(i + 1)  # Add 1 to the band index to match 1-based indexing
-            ds_i = xr.DataArray(band_i, dims=('x', 'y'), 
-                                coords={"y": x, "x": y})
+            ds_i = xr.DataArray(band_i, dims=('y', 'x'), 
+                                coords={"y": y, "x": x})
 
             # Assign DataArray to a variable based on band index
-            band_name = f'band_{i + 1}' # band_name = f'band_{i + 1}'
+            band_name = f'band_{i + 1}' 
             data_dict[band_name] = ds_i.astype(float)
 
 
@@ -144,14 +144,18 @@ def xarray_ds(tiff_path, rice_model = None):
             ndwi_band = (data_dict['band_2'] - data_dict['band_4']) / (data_dict['band_4'] + data_dict['band_2'])
             gndvi_band = (data_dict['band_4'] - data_dict['band_2']) / (data_dict['band_4'] + data_dict['band_2'])
 
-            # ( 1.5 *(data_dict['band_4'] - data_dict['band_1'])) / ( data_dict['band_4'] + data_dict['band_1'] + 0.5)
-            
+                        
             data_dict['ndvi'] = ndvi_band.astype(float)
             data_dict['ndwi'] = ndwi_band.astype(float)
             data_dict['gndvi'] = gndvi_band.astype(float)
+            
+            # # Create an xarray Dataset with all the bands
+            # dataset = xr.Dataset({'ndvi': ndvi_band, 'ndwi': ndwi_band, 'gndvi': gndvi_band}).astype(float)
 
         else:
             pass
+            # # Create an xarray Dataset with all the bands
+            # dataset = xr.Dataset(data_dict).astype(float)
  
 
         # Create an xarray Dataset with all the bands

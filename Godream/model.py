@@ -5,8 +5,8 @@ import numpy as np
 from sklearn import model_selection
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
-from Godream.convertool import xarray_ds
-from Godream.classification import predict_xray
+from convertool import xarray_ds
+from classification import predict_xray
 
 
 # Model for rice classification from SAR VH(19 bands, crs 4326)
@@ -172,15 +172,15 @@ def riceByOptical(raster_img = True, output_tiff = True, figsize = None, num_est
     print('Creating Xarray dataset')
     
     # input ds
-    ds_input = xarray_ds(tiff_path=raster_img)
+    ds_input = xarray_ds(tiff_path=raster_img, rice_model = True)
     
     print('Finish to create Xarray dataset')
     
     # read training set
-    gdf =gpd.read_file('data/trainset_DN.geojson')
+    gdf =gpd.read_file('data/trainset_index.geojson')
     
     # training data preparation
-    columns_to_convert = ['class','band_1','band_2','band_3','band_4']  
+    columns_to_convert = ['class', 'band_1', 'band_2', 'band_3', 'band_4', 'ndvi', 'ndwi', 'gndvi']  
 
     # select column to use
     model_input1 = gdf[columns_to_convert]
@@ -211,6 +211,8 @@ def riceByOptical(raster_img = True, output_tiff = True, figsize = None, num_est
     
     print('num of estimator: ', num_estimator)
     
+    print("Call Random Forest Classifier")
+    
     # initial the model
     rf_model = RandomForestClassifier(n_estimators= num_estimator, random_state=42)
     
@@ -219,6 +221,8 @@ def riceByOptical(raster_img = True, output_tiff = True, figsize = None, num_est
     
     # validate acc of model
     predictions = rf_model.predict(model_test[:, model_col_indices])
+    
+    print("train model")
     
     acc = accuracy_score(predictions, model_test[:, 0])
 
@@ -236,8 +240,6 @@ def riceByOptical(raster_img = True, output_tiff = True, figsize = None, num_est
                                     crs = ds_input.geobox.crs,
                                     )
     print('exported result to your output path')
-    
-    print('Note that: the output will be upside down, You can flip it in ArcMap software.')
      
     # set figure size for plot output image
     if figsize is None:
@@ -252,8 +254,7 @@ def riceByOptical(raster_img = True, output_tiff = True, figsize = None, num_est
                                add_labels=False, 
                                add_colorbar=False)
     
-    # Reverse the Y-axis to match your desired orientation
-    axes.invert_yaxis()
+
 
     # Add a plot title
     axes.set_title('Classified Data')
