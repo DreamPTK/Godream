@@ -2,8 +2,8 @@ import rasterio
 import rioxarray
 import geopandas as gpd
 import xarray as xr
-import numpy as np
 import json
+import numpy as np
 from rasterio.warp import calculate_default_transform, reproject, Resampling
 
 
@@ -106,9 +106,9 @@ def convert_crs(input_path, output_path, new_crs):
                         dst_crs=new_crs,
                         resampling=Resampling.bilinear
                 )
-
+    
 # fuction to create xarray from raster       
-def xarray_ds(tiff_path):
+def xarray_ds(tiff_path, rice_model = None):
     with rasterio.open(tiff_path) as src:
         
         # Get spatial information
@@ -124,18 +124,35 @@ def xarray_ds(tiff_path):
         # Create the coordinates for the x and y dimensions
         left, bottom, right, top = src.bounds
         x = np.linspace(left, right, src.width)
-        y = np.linspace(bottom, top, src.height)
+        y = np.linspace(top, bottom, src.height)
         
 
         # Read each band and create a DataArray for it
         for i in range(num_band):
             band_i = src.read(i + 1)  # Add 1 to the band index to match 1-based indexing
-            ds_i = xr.DataArray(band_i, dims=('y', 'x'), 
-                                coords={"x": x, "y": y})
+            ds_i = xr.DataArray(band_i, dims=('x', 'y'), 
+                                coords={"y": x, "x": y})
 
             # Assign DataArray to a variable based on band index
             band_name = f'band_{i + 1}' # band_name = f'band_{i + 1}'
             data_dict[band_name] = ds_i.astype(float)
+
+
+        if rice_model is True:    
+        # Calculate new bands
+            ndvi_band = (data_dict['band_4'] - data_dict['band_1']) / (data_dict['band_4'] + data_dict['band_1'])
+            ndwi_band = (data_dict['band_2'] - data_dict['band_4']) / (data_dict['band_4'] + data_dict['band_2'])
+            gndvi_band = (data_dict['band_4'] - data_dict['band_2']) / (data_dict['band_4'] + data_dict['band_2'])
+
+            # ( 1.5 *(data_dict['band_4'] - data_dict['band_1'])) / ( data_dict['band_4'] + data_dict['band_1'] + 0.5)
+            
+            data_dict['ndvi'] = ndvi_band.astype(float)
+            data_dict['ndwi'] = ndwi_band.astype(float)
+            data_dict['gndvi'] = gndvi_band.astype(float)
+
+        else:
+            pass
+ 
 
         # Create an xarray Dataset with all the bands
         dataset = xr.Dataset(data_dict).astype(float)
