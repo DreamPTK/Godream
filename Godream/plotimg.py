@@ -356,7 +356,53 @@ def show_map(lat=None, lon=None, with_draw_tools=True,zoom=None):
     folium.TileLayer('https://basemap.sphere.gistda.or.th/tiles/sphere_hybrid/EPSG3857/{z}/{x}/{y}.jpeg?key=42B90819583344A789DA424BE70CDB61', name='Gistda Hybrid', attr='sphere.gistda').add_to(m)
     folium.TileLayer('https://basemap.sphere.gistda.or.th/tiles/thailand_images/EPSG3857/{z}/{x}/{y}.jpeg?key=test2022', name='Gistda Satellite', attr='sphere.gistda').add_to(m)
     
-      
+
+    # add WMS
+    folium.WmsTileLayer(
+    url="https://basemap.sphere.gistda.or.th/service?key=test2022",
+    name="Gistda streets",
+    fmt="image/png",
+    layers='sphere_streets',
+    attr=u"gistda",
+    transparent=True,
+    overlay=False,
+    control=True,
+    ).add_to(m)
+    
+    folium.WmsTileLayer(
+    url="http://ows.terrestris.de/osm/service?",
+    name="Hillshade",
+    fmt="image/png",
+    layers='SRTM30-Colored-Hillshade',
+    attr=u"OSM",
+    transparent=True,
+    overlay=False,
+    control=True,
+    ).add_to(m)
+    
+    folium.WmsTileLayer(
+    url="http://ows.mundialis.de/services/service?",
+    name="Topology",
+    fmt="image/png",
+    layers='TOPO-WMS,OSM-Overlay-WMS',
+    attr=u"OSM",
+    transparent=True,
+    overlay=False,
+    control=True,
+    ).add_to(m)
+    
+    folium.WmsTileLayer(
+    url="http://ows.terrestris.de/osm/service?",
+    name="OSM_terrestris",
+    fmt="image/png",
+    layers='OSM-WMS',
+    attr=u"OSM",
+    transparent=True,
+    overlay=False,
+    control=True,
+    ).add_to(m)
+        
+
     # Add layer control to the map
     folium.LayerControl().add_to(m)
 
@@ -514,6 +560,53 @@ def overlay_map(vector_file=None, raster_file=None, with_draw_tools=True,zoom=No
     folium.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', name='OpenStreetMap', attr='OpenStreetMap').add_to(m)
     folium.TileLayer('https://basemap.sphere.gistda.or.th/tiles/sphere_hybrid/EPSG3857/{z}/{x}/{y}.jpeg?key=42B90819583344A789DA424BE70CDB61', name='Gistda Hybrid', attr='sphere.gistda').add_to(m)
     folium.TileLayer('https://basemap.sphere.gistda.or.th/tiles/thailand_images/EPSG3857/{z}/{x}/{y}.jpeg?key=test2022', name='Gistda Satellite', attr='sphere.gistda').add_to(m)
+    
+    
+    # add WMS
+    folium.WmsTileLayer(
+    url="https://basemap.sphere.gistda.or.th/service?key=test2022",
+    name="Gistda streets",
+    fmt="image/png",
+    layers='sphere_streets',
+    attr=u"gistda",
+    transparent=True,
+    overlay=False,
+    control=True,
+    ).add_to(m)
+    
+    folium.WmsTileLayer(
+    url="http://ows.terrestris.de/osm/service?",
+    name="Hillshade",
+    fmt="image/png",
+    layers='SRTM30-Colored-Hillshade',
+    attr=u"OSM",
+    transparent=True,
+    overlay=False,
+    control=True,
+    ).add_to(m)
+    
+    folium.WmsTileLayer(
+    url="http://ows.mundialis.de/services/service?",
+    name="Topology",
+    fmt="image/png",
+    layers='TOPO-WMS,OSM-Overlay-WMS',
+    attr=u"OSM",
+    transparent=True,
+    overlay=False,
+    control=True,
+    ).add_to(m)
+    
+    folium.WmsTileLayer(
+    url="http://ows.terrestris.de/osm/service?",
+    name="OSM_terrestris",
+    fmt="image/png",
+    layers='OSM-WMS',
+    attr=u"OSM",
+    transparent=True,
+    overlay=False,
+    control=True,
+    ).add_to(m)
+    
     
     # add fullscreen plugin
     Fullscreen().add_to(m) 
